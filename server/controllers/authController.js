@@ -2,9 +2,10 @@
 
 const User = require("../models/user");
 const generateOTP = require("../utils/otpGenerator");
+const sendOTPToEmail=require("../services/emailService/")
 
 const sendOTP=async(req,res)=>{
-    const {phoneNumber, suffix, email}=req.body;
+    const {email}=req.body;
     const otp=generateOTP();
     const expiry=new Date(Date.now()+5*60*1000); //1000 because Date.now() returns time elapsed since 1 January 1970 (UNIX Epoch) in milliseconds
     let user;
@@ -19,12 +20,6 @@ const sendOTP=async(req,res)=>{
 
             return response(res,200,'OTP Sent to your email',{email})
         }
-
-        if(!phoneNumber || !phoneSuffix) return response(res,400,'Phone number and suffix are both needed');
-
-        const fullPhoneNumber=`${phoneSuffix}${phoneNumber}`;
-        user=await User.findOne({phoneNumber});
-        if(!user) user=new User({phoneNumber,phoneSuffix});
         
         await User.save();
 
@@ -37,5 +32,3 @@ const sendOTP=async(req,res)=>{
 
 
 
-
-}
