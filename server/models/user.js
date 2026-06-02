@@ -25,10 +25,10 @@ const userSchema=mongoose.Schema({
         message: props => `${props.value} is not a valid email address`
         }
     },
-    emailOtp:{
+    emailOTP:{
         type:String,
     },
-    emailOtpExpiry:{
+    emailOTPExpiry:{
         type:Date,
     },
     profilePicture:{
