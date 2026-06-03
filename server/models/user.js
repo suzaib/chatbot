@@ -1,15 +1,6 @@
 const mongoose=require("mongoose");
 
 const userSchema=mongoose.Schema({
-    phoneNumber:{
-        type:Number,
-        unique:true,
-        sparse:true, //This means only check uniqueness when the phone number is entered
-    },
-    phoneSuffix:{
-        type:String,
-        unique:false,
-    },
     userName:{
         type:String,
     },

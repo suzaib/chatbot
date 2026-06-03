@@ -2,7 +2,7 @@
 
 const User = require("../models/user");
 const generateOTP = require("../utils/otpGenerator");
-const sendOTPToEmail=require("../services/emailService/")
+const sendOTPToEmail=require("../services/emailService");
 
 const sendOTP=async(req,res)=>{
     const {email}=req.body;
@@ -22,11 +22,22 @@ const sendOTP=async(req,res)=>{
         }
         
         await User.save();
+        await sendOTPToEmail(email,otp);
 
         return response(res,200,'Otp sent successfully',user)
     } catch (error) {
         console.error(error);
         return response(res,500,'Internal Server Error')
+    }
+}
+
+
+//Verifying the OTP
+const verifyOTP=async(req,res)=>{
+    const {email,otp}=req.body;
+    try{
+        let user;
+        if(email) user=await User.findOne({email});
     }
 }
 

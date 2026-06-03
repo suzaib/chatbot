@@ -1,4 +1,4 @@
-const { sendEmail } = require("./resendService");
+const sendEmai = require("./resendService");
 
 const sendOTPToEmail = async (email, otp) => {
     const subject = "Verify Your Account";
