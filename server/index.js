@@ -10,6 +10,10 @@ const PORT=process.env.PORT;
 
 const app=express();
 
+//Middlewares
+app.use(express.json()); //Parse body data
+app.use(cookieParser()); //Parse token on every request
+
 //Database Connection
 connectDB();
 
