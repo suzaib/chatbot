@@ -65,6 +65,7 @@ const verifyOTP=async(req,res)=>{
     }
 }
 
+const updateProfile
 module.exports={
     sendOTP,
     verifyOTP
