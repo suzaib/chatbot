@@ -2,19 +2,14 @@
 using namespace std;
 
 int main(){
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
     int t;
     cin>>t;
     while(t--){
-        int n,k;
-        cin>>n>>k;
-        String str;
-        cin>>str;
-
-        cin>>n;
-        vector<int> height(n);
-        for(int i=0;i<n;i++) cin>>height[i];
-        auto [mn,mx]=minmax_element(height.begin(),height.end());
-        cout<<((*mx)+1)-(*mn)<<"\n";
+        int a,b,x;
+        cin>>a>>b>>x;
+        
     }
     return 0;
 }
