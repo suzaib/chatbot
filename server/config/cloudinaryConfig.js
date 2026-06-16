@@ -8,7 +8,8 @@ const multer=require('multer');
 //Then we will give that file to cloudinary 
 //Cloudinary will store it in their servers and will provide us a link to access the image
 //As soon as the image is stored in cloudinary and we have got a link to access the file, we will delete the file from our local system
-const cloudinary=require('cloudinary').v2;
+const cloudinary=require('cloudinary').v2; //.v2 means give me the version 2 API object which has the cleanest syntax and is recommended
+
 
 const dotenv=require('dotenv');
 
@@ -30,6 +31,8 @@ const uploadFileToCloudinary=(file)=>{
     return new Promise((resolve,reject)=>{
         const uploader=file.mimetype.startsWith('video')? cloudinary.uploader.upload_large:cloudinary.uploader.upload;
         uploader(file.path,options,(error,result)=>{
+
+            //The unlink method is used to delete a file
             fs.unlink(file.path,()=>{
                 if(error) reject(error);
                 resolve(result);
