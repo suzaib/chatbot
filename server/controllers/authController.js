@@ -93,7 +93,8 @@ const updateProfile=async(req,res)=>{
 }
 module.exports={
     sendOTP,
-    verifyOTP
+    verifyOTP,
+    updateProfile
 }
 
 
