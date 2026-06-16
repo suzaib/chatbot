@@ -14,3 +14,16 @@ const response=(res,statusCode,message,data=null)=>{
 };
 
 module.exports=response;
+
+const response=(res,statusCode,msg,data=null)=>{
+    if(!res){
+        console.error('Response Object is null');
+        return;
+    }
+    const responseObject={
+        status:statusCode<400? 'success':'error',
+        message,
+        data
+    }
+    return res.status(statusCode).json(responseObject);
+}

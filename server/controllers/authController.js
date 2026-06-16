@@ -4,6 +4,7 @@ const User = require("../models/user");
 const generateOTP = require("../utils/otpGenerator");
 const sendOTPToEmail=require("../services/emailService");
 const generateToken = require("../utils/tokenGenerator");
+const { uploadFileToCloudinary } = require("../config/cloudinaryConfig");
 
 const sendOTP=async(req,res)=>{
     const {email}=req.body;
@@ -72,9 +73,20 @@ const updateProfile=async(req,res)=>{
         const user=await User.findById(userId);
         const file=req.file;
         if(file){
-            const uploadResult=
-            user.profilePicture
+            const uploadResult=await uploadFileToCloudinary(file)
+            user.profilePicture=uploadResult?.secure_url;
         }
+        else if(req.body.profilePicture) user.profilePicture=req.body.profilePicture;
+
+        //We update only that field which is passed
+        //For eg if the user updates his profile and only passes a new username, we only update username
+        if(username) user.username=username;
+        if(agreed) user.agreed=agreed;
+        if(about) user.about=about;
+
+        await user.save();
+
+        return response(res,200,'User Profile Updated Successfully',user);
     } catch (error) {
         
     }
