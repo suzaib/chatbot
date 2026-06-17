@@ -87,14 +87,29 @@ const updateProfile=async(req,res)=>{
         await user.save();
 
         return response(res,200,'User Profile Updated Successfully',user);
-    } catch (error) {
-        
+    } 
+    catch (error) {
+        console.error(error);
+        return response(res,500,"Internal Server Error");
+    }
+};
+
+const logout=(req,res)=>{
+    try {
+        res.cookie("auth_token","",{expires:new Date(0)});
+        return response(res,200,"User logged out successfully");
+    } 
+    catch (error) {
+        console.error(error);
+        return response(res,500,"Internal server error");
     }
 }
+
 module.exports={
     sendOTP,
     verifyOTP,
-    updateProfile
+    updateProfile,
+    logout
 }
 
 

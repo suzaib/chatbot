@@ -6,7 +6,8 @@ const { multerMiddleware } = require('../config/cloudinaryConfig');
 const router=express.Router();
 
 router.post('/send-otp',authController.sendOTP);
-router.pose('/verify-otp',authController.verifyOTP);
+router.post('/verify-otp',authController.verifyOTP);
+router.pose('/logout',authController.logout);
 
 //Protected Route
 router.put('/update-profile',authMiddleware,multerMiddleware,authController.updateProfile)
