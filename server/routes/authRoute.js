@@ -11,5 +11,6 @@ router.post('/logout',authController.logout);
 
 //Protected Route
 router.put('/update-profile',authMiddleware,multerMiddleware,authController.updateProfile)
+router.get('/check-auth',authMiddleware,authController.checkAuthenticated);
 
 module.exports=router;

@@ -107,7 +107,7 @@ const checkAuthenticated=async(req,res)=>{
         console.error(error);
         return response(res,500,'Internal server error');
     }
-}
+};
 
 const logout=(req,res)=>{
     try {
@@ -117,6 +117,20 @@ const logout=(req,res)=>{
     catch (error) {
         console.error(error);
         return response(res,500,"Internal server error");
+    }
+};
+
+const getAllUsers=async(req,res)=>{
+    const loggedInUser=req.user.userId;
+    try{
+
+        //We find all the users except us(the logged in person)
+        //$ne means not equal
+        const users=await User.find({_id:{$ne:loggedInUser}}).select(
+            "username profilePicture lastSeen isOnline about"
+        ).lean();
+
+        const usersWithConversation = await Promise.all
     }
 }
 
