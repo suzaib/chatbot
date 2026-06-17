@@ -94,6 +94,21 @@ const updateProfile=async(req,res)=>{
     }
 };
 
+const checkAuthenticated=async(req,res)=>{
+    try {
+        const userId=req.user.userId;
+        if(!userId) return response(res,404,'Unauthorized, Please login to access the app');
+
+        const user=await User.findById(userId);
+        if(!user) return response(res,404,"User not found");
+        return response(res,200,'User retrieved',user);
+    } 
+    catch (error) {
+        console.error(error);
+        return response(res,500,'Internal server error');
+    }
+}
+
 const logout=(req,res)=>{
     try {
         res.cookie("auth_token","",{expires:new Date(0)});
@@ -109,6 +124,7 @@ module.exports={
     sendOTP,
     verifyOTP,
     updateProfile,
+    checkAuthenticated,
     logout
 }
 
