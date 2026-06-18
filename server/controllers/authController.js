@@ -139,14 +139,14 @@ const getAllUsers=async(req,res)=>{
             users.map(async(user)=>{
                 const conversation=await Conversation.findOne({
                     participants:{$all:[loggedInUser,user?._id]}
-                }).populate({
+                }).populate({ //Populates recovers the whole last message docu
                     path:"lastMessage",
                     select:"content createdAt sender receiver"
                 }).lean();
 
                 return {
                     ...user,
-                    conversation:conversation|null,
+                    conversation:conversation,
                 }
             })
         )
@@ -157,7 +157,6 @@ const getAllUsers=async(req,res)=>{
         return response(res,500,"Internal server error");
     }
 }
-
 
 module.exports={
     sendOTP,
