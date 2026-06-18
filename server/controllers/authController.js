@@ -130,6 +130,10 @@ const getAllUsers=async(req,res)=>{
         const users=await User.find({_id:{$ne:loggedInUser}}).select(
             "username profilePicture lastSeen isOnline about"
         ).lean();
+        //Without lean() method, the returned thing is a mongoose document which also has some built in functions like isModified, validate etc
+        //These methods consume extra memory and we don't need them as of now since we are only sending data to frontend
+        //There we want plain js of only what we have asked
+        //That's why we use lean() method
 
         const usersWithConversation = await Promise.all(
             users.map(async(user)=>{

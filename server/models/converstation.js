@@ -1,5 +1,9 @@
 const mongoose=require("mongoose");
 
+const Conversation=mongoose.model("Conversation",conversationSchema);
+module.exports=Conversation
+
+
 const conversationSchema=new mongoose.Schema({
     participants:[{
         type:mongoose.Schema.Types.ObjectId,
@@ -10,10 +14,7 @@ const conversationSchema=new mongoose.Schema({
         ref:"Message"
     },
     unreadCount:{
-        type:Number, 
+        type:Number,
         default:0
     }
-}, {timestamps:true})
-
-const Conversation=mongoose.model("Conversation",conversationSchema);
-module.exports=Conversation
+})
