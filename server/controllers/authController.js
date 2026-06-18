@@ -142,7 +142,7 @@ const getAllUsers=async(req,res)=>{
 
                 return {
                     ...user,
-                    conversation:conversation|null;
+                    conversation:conversation|null,
                 }
             })
         )
