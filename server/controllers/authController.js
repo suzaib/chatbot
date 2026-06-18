@@ -5,6 +5,7 @@ const generateOTP = require("../utils/otpGenerator");
 const sendOTPToEmail=require("../services/emailService");
 const generateToken = require("../utils/tokenGenerator");
 const { uploadFileToCloudinary } = require("../config/cloudinaryConfig");
+const Conversation=require("../models/converstation");
 
 const sendOTP=async(req,res)=>{
     const {email}=req.body;
@@ -130,16 +131,37 @@ const getAllUsers=async(req,res)=>{
             "username profilePicture lastSeen isOnline about"
         ).lean();
 
-        const usersWithConversation = await Promise.all
+        const usersWithConversation = await Promise.all(
+            users.map(async(user)=>{
+                const conversation=await Conversation.findOne({
+                    participants:{$all:[loggedInUser,user?._id]}
+                }).populate({
+                    path:"lastMessage",
+                    select:"content createdAt sender receiver"
+                }).lean();
+
+                return {
+                    ...user,
+                    conversation:conversation|null;
+                }
+            })
+        )
+        return response(res,200,"Users retrieved successfully",usersWithConversation);
+    }
+    catch(error){
+        console.error(error);
+        return response(res,500,"Internal server error");
     }
 }
+
 
 module.exports={
     sendOTP,
     verifyOTP,
     updateProfile,
     checkAuthenticated,
-    logout
+    logout,
+    getAllUsers
 }
 
 
