@@ -172,6 +172,23 @@ const markAsRead=async(req,res)=>{
 const deleteMsg=async(req,res)=>{
     const {messageId}=req.params;
     const userId=req.user.userId;
+
+    try{
+        const msg=await Message.findById(messageId);
+
+        //We can only delete a message if it exists
+        if(!msg) return response(res,404,"Message not found");
+
+        //Only the sender can delete his msg, he can't delete other's messages
+        if(msg.sender.toString()!==userId) return response(res,403,"You do not have permission to delete this message");
+
+        await msg.deleteOne();
+        return response(res,200,"Message deleted");
+    }
+    catch(error){
+        console.error(error);
+        return response(res,500,"Internal server error");
+    }
 }
 
 
