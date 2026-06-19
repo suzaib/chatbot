@@ -192,4 +192,10 @@ const deleteMsg=async(req,res)=>{
 }
 
 
-//3:17:58
+module.exports={
+    sendMessage,
+    getAllConversations,
+    getMessages,
+    markAsRead,
+    deleteMsg
+}
