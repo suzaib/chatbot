@@ -156,11 +156,22 @@ const markAsRead=async(req,res)=>{
         })
 
         await Message.updateMany(
-            {
-                _id:$
-            }
-        )
+            {_id:{$in:messageIds},receiver:userId},
+            {$set:{messageStatus:"read"}}
+        );
+
+        return response(res,200,"Messages marked as read",messages);
     }
+    catch(errror){
+        console.error(error);
+        return response(res,500,"Internal server error");
+    }
+};
+
+//Deleting Messages
+const deleteMsg=async(req,res)=>{
+    const {messageId}=req.params;
+    const userId=req.user.userId;
 }
 
 
