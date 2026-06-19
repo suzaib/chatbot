@@ -83,7 +83,7 @@ const sendMessage=async(req,res)=>{
 
 
 //Get All Conversations
-const getAllConversations=async(req,res)=>{
+const getConversations=async(req,res)=>{
     const userId=req.user.userId;
     try{
         let conversation=await Conversation.find({
@@ -169,7 +169,7 @@ const markAsRead=async(req,res)=>{
 };
 
 //Deleting Messages
-const deleteMsg=async(req,res)=>{
+const deleteMessage=async(req,res)=>{
     const {messageId}=req.params;
     const userId=req.user.userId;
 
@@ -194,8 +194,8 @@ const deleteMsg=async(req,res)=>{
 
 module.exports={
     sendMessage,
-    getAllConversations,
+    getConversations,
     getMessages,
     markAsRead,
-    deleteMsg
+    deleteMessage,
 }
