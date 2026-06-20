@@ -10,4 +10,6 @@ router.post('/send-message',authMiddleware,multerMiddleware,chatController.sendM
 router.get('/conversations',authMiddleware,chatController.getConversations);
 router.get('/conversation/:conversationId/messages',authMiddleware,chatController.getMessages);
 router.post('/messages/read',authMiddleware,chatController.markAsRead);
-router.delete('/messages/:messageId',authMiddleware,chatController.deleteMsg)
+router.delete('/messages/:messageId',authMiddleware,chatController.deleteMsg);
+
+module.exports=router;
