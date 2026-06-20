@@ -34,23 +34,18 @@ const sendMessage=async(req,res)=>{
 
         //Handle file upload
         if(file){
-            const uploadFile=uploadFileToCloudinary(file);
+            const uploadFile=await uploadFileToCloudinary(file);
 
-            if(uploadFile.secure_url) return response(res,400,"Failed to upload media");
+            if(!uploadFile.secure_url) return response(res,400,"Failed to upload media");
 
             imageOrVideoUrl=uploadFile.secure_url;
 
-            if(file.mimetype.startsWith("image")){
-                contentType:"image"
-            }
-            else if(file.mimetype.startsWith("video")){
-                contentType:"video"
-            }
+            if(file.mimetype.startsWith("image")) contentType="image";
+            else if(file.mimetype.startsWith("video")) contentType="video";
             else return response(res,400,"Unsupported file type");
         }
-        else if(content?.trim()){
-            contentType:"text";
-        }
+        
+        else if(content?.trim()) contentType="text";
         else return response(res,400,"Message content is required");
 
         const message=new Message({
