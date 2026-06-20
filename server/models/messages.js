@@ -2,8 +2,8 @@ const mongoose=require("mongoose");
 
 const messageSchema=mongoose.Schema({
     conversation:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Conversation",
+        type:mongoose.Schema.Types.ObjectId, //Type will be an objectId
+        ref:"Conversation", //ObjectId of what? Conversation
         required:true
     },
     sender:{
