@@ -1,26 +1,21 @@
-const multer=require('multer');
-const cloudinary=require('cloudinary').v2;
-const dotenv=require('dotenv');
-const fs=require('fs');
+const Conversation = require("./models/converstation");
 
-cloudinary.config({
-    cloud_name:process.env.ClOUDINARY_NAME,
-    api_key:process.env.CLOUDINARY_API_KEY,
-    api_secret:process.env.CLOUDINARY_API_SECRET
-})
+const sendMessage=async(req,res)=>{
+    try{
+        const {senderId,receiverId,content,messageStatus}=req.body;
+        const file=req.file;
+        const participants=[senderId,receiverId].sort();
 
-const uploadFile=(file)=>{
-    const options={
-        resource_type:file.mimetype.startsWith('video')? 'video':'image'
+        let conversation=await Conversation.findOne({
+            participants:participants
+        });
+
+        if(!conversation){
+            conversation=new Conversation({
+                participants,
+            });
+
+            await conversation.save();
+        }
     }
-
-    return new Promise((resolve,reject)=>{
-        const uploader=file.mimetype.startsWith('video')? cloudinary.uploader.upload_large:cloudinary.uploader.upload;
-        uploader(file.path,options,(error,result)=>{
-            fs.unlink(file.path,()=>{
-                if(error) reject(error);
-                resolve(result);
-            })
-        })
-    })
 }

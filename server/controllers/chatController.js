@@ -10,6 +10,9 @@ const sendMessage=async(req,res)=>{
         const file=req.file;
 
         const participants=[senderId,receiverId].sort();
+        //With sorting, conversation between A and B always show as ['A','B'] regardless of whether b sends or a sends
+        //Otherwise we could have two participants arrays for same conversation as ['A','B'] and ['B','A']
+        
         
         //Check if conversation already exists
         let conversation=await Conversation.findOne({
