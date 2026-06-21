@@ -65,11 +65,15 @@ const sendMessage=async(req,res)=>{
         conversation.unreadCount+=1;
         await conversation.save();
 
-        const populatedMsg=await Message.findOne(message?._id)
+        const populatedMsg=await Message.findById(message?._id)
         .populate("sender","username profilePicture")
         .populate("receiver","username profilePicture");
+        //We first populate sender with only the username and profilePicture fields
+        //Then do the same and populate the receiver
 
         return response(res,200,"Message sent successfully",populatedMsg);
+        //We do this so that the frontend doesn't need to fetch username and profile pic again from the users, we pass that to the frontend directly
+
     }
     catch(error){
         console.error(error);
@@ -83,16 +87,18 @@ const getConversations=async(req,res)=>{
     const userId=req.user.userId;
     try{
         let conversation=await Conversation.find({
+
+            //Find all the documents where the participants array contains the userId
             participants:userId,
         })
-        .populate("participants, username profilePicture isOnline lastSeen")
+        .populate("participants","username profilePicture isOnline lastSeen")
         .populate({
             path:"lastMessage",
             populate:{
                 path:"sender receiver",
                 select:"username profilePicture"
             }
-        }).sort({updatedAt:-1});
+        }).sort({updatedAt:-1});//Descending sort, therefore the most recent conversation comes first
 
         return response(res,200,"Conversation fetched successfully",conversation);
     }
