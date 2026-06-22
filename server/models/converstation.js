@@ -4,6 +4,8 @@ const Conversation=mongoose.model("Conversation",conversationSchema);
 module.exports=Conversation
 
 
+//Conversation will only contain the metadata of the chat
+//Like who are the people involved in the chat, what is the last message and what is the unread count
 const conversationSchema=new mongoose.Schema({
 
     //We store an array of objects since we need id of participants which are more than 1

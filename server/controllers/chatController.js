@@ -111,17 +111,24 @@ const getConversations=async(req,res)=>{
 };
 
 //Get Messages of specific conversation
+//This function will be called when the user opens a chat
 const getMessages=async(req,res)=>{
+
+    //ConversationId basically tells us the two people involved in a chat
+    //It is unique for each pair of people
     const {conversationId}=req.params;
     const userId=req.user.userId;
 
     try{
+
+        //First we find out if such a conversation exists
         const conversation=await Conversation.findById(conversationId);
         if(!conversation) return response(res,404,"Conversation not found");
 
         //Only the person involved in the conversation can open the conversation and no one else
         if(!conversation.participants.includes(userId)) return response(res,403,"Not authorized to view this conversation");
 
+        //Then we find all those messages whose conversationid is the one needed
         const messages=await Message.find({
             conversation:conversationId
         })
