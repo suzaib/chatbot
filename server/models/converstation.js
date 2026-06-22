@@ -1,7 +1,6 @@
 const mongoose=require("mongoose");
 
-const Conversation=mongoose.model("Conversation",conversationSchema);
-module.exports=Conversation
+
 
 
 //Conversation will only contain the metadata of the chat
@@ -22,3 +21,6 @@ const conversationSchema=new mongoose.Schema({
         default:0
     }
 })
+
+const Conversation=mongoose.model("Conversation",conversationSchema);
+module.exports=Conversation
