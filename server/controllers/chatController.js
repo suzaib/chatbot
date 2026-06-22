@@ -83,6 +83,7 @@ const sendMessage=async(req,res)=>{
 
 
 //Get All Conversations
+//To display the user's chat list
 const getConversations=async(req,res)=>{
     const userId=req.user.userId;
     try{
@@ -101,6 +102,7 @@ const getConversations=async(req,res)=>{
         }).sort({updatedAt:-1});//Descending sort, therefore the most recent conversation comes first
 
         return response(res,200,"Conversation fetched successfully",conversation);
+        //The frontend needs the data to display the user's chat list
     }
     catch(error){
         console.error(error);
