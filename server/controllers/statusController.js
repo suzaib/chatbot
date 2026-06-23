@@ -51,9 +51,43 @@ const createStatus=async(req,res)=>{
 
 const getStatus=async(req,res)=>{
     try{
-        const status=await Status.find({
+        const statuses=await Status.find({
             expiresAt:{$gt:new Date()}
         })
+        .populate("user","username profilePicture")
+        .populate("viewers","username profilePicture").sort({createdAt:-1});
+
+        return response(res,200,"Statuses retreived successfully",statuses)
+    }
+    catch(error){
+        console.error(error);
+        return response(res,500,"Internal server error");
+    }
+};
+
+const viewStatus=async(req,res)=>{
+    const {statusId}=req.params;
+    const userId=req.user.userId;
+    try{
+        const isStatus=await Status.findById(statusId);
+
+        //If status does not exists
+        if(!isStatus) return response(res,404,"Status not found");
+
+        //Only add if the status isn't already viewed
+        if(!status.viewers.include(userId)){
+            status.viewers.push(userId);
+            await status.save();
+
+            const updatedStatus=await Status.findById(statusId)
+            .populate("user","username profilePicture")
+            .populate("viewers","username profilePicture")
+        }
+        else console.log("User already viewed the status");
+
+        return response(res,200,"Status viewed successfully");
+        else
+
     }
 }
 
