@@ -83,11 +83,37 @@ const viewStatus=async(req,res)=>{
             .populate("user","username profilePicture")
             .populate("viewers","username profilePicture")
         }
-        else console.log("User already viewed the status");
 
         return response(res,200,"Status viewed successfully");
-        else
+    }
+    catch(error){
+        console.error(error);
+        return response(res,500,"Internal server error");
+    }
+};
 
+
+//Deleting the status
+//This will be triggered when we delete a status
+const deleteStatus=async(req,res)=>{
+    const {statusId}=req.params;
+    const userId=req.user.userId;
+    try{
+        const status=await Status.findById(statusId);
+
+        //We can't delete a status that doesn't exists
+        if(!status) return response(res,404,"Status not found");
+
+        //A user can only delete his own status
+        if(status.user.toString()!==userId) return response(res,403,"You don't have permission to delete other's status");
+
+        //Deleting the status
+        await status.deleteOne();
+        return response(res,200,"Status deleted");
+    }
+    catch(error){
+        console.error(error);
+        return response(res,500,"Internal server error");
     }
 }
 
