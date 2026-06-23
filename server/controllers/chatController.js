@@ -137,11 +137,15 @@ const getMessages=async(req,res)=>{
         .sort("createdAt");
 
         await Message.updateMany(
+
+            //Filter
             {
                 conversation:conversationId,
                 receiver:userId,
                 messageStatus:{$in:["send","delivered"]}
             },
+
+            //What to update
             {
                 $set:{messageStatus:"read"}
             });
