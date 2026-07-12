@@ -10,16 +10,16 @@ const onlineUsers=new Map();
 const typingUsers=new Map();
 
 const initializeSocket=(server)=>{
-    const io=new Server(server,{
+    const io=new Server(server,{ //Creating a socket.io server, The Second argument is the configuration settings for the server
         cors:{
-            origin:process.env.FRONTEND_URL,
-            credentials:true,
-            method:['GET','PUT','DELETE','POST','OPTIONS']
+            origin:process.env.FRONTEND_URL, //Allow requests from this origin
+            credentials:true, //Credentials like cookies etc can be sent over cross origin requests
+            method:['GET','PUT','DELETE','POST','OPTIONS'] //These methods are allowed for cross origin requests
         },
         pingTimeout:60*1000 //Disconnecting inactive users/sockets after 60s
     })
 
-    //When a new socket connection is established
+    //When a new client connects, socket.io creates a new socket object
     io.on('connection',(socket)=>{
         console.log(`User connected : ${socket.id}`)
         let userId=null;
