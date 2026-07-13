@@ -21,11 +21,11 @@ const initializeSocket=(server)=>{
 
     //When a new client connects, socket.io creates a new socket object
     io.on('connection',(socket)=>{
-        console.log(`User connected : ${socket.id}`)
         let userId=null;
 
         //Handle user connection and mark them online in db
-        socket.on("user_connected",async(connectingUserId)=>{
+        //The event will be triggered by the frontend
+        socket.on("user_connected",async(connectingUserId)=>{ //on waits for the event named user_connected to be triggered
             try{
                 userId=connectingUserId;
                 onlineUsers.set(userId,socket.id);
@@ -38,7 +38,8 @@ const initializeSocket=(server)=>{
                 });
 
                 //Notify all users that this user is now online
-                io.emit("user_status",{userId,isOnline:true});
+                //This will be listened by the frontend
+                io.emit("user_status",{userId,isOnline:true}); //emit is used to trigger the event
             }
             catch(error){
                 console.error("Error handling user connection",error);
