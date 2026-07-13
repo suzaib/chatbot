@@ -45,5 +45,23 @@ const initializeSocket=(server)=>{
                 console.error("Error handling user connection",error);
             }
         })
+
+        //Return online status of requested users
+        socket.on("get_user_status",(requestedUserId,callback)=>{
+            const isOnline=onlineUsers.has(requestedUserId);
+            callback({
+                userId:requestedUserId,
+                isOnline,
+                lastSeen:isOnline? newDate():null
+            })
+        })
+
+        //Forward message to receiver if online
+        socket.on("send_message",async(message)=>{
+            try{
+                const receiverSocketId=onlineUsers.get(message.receiver?._id);
+                if(receiverSocketId) io.to(receiverSocketId).emit("received_message")
+            }
+        })
     })
 }
