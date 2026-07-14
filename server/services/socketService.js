@@ -60,8 +60,33 @@ const initializeSocket=(server)=>{
         socket.on("send_message",async(message)=>{
             try{
                 const receiverSocketId=onlineUsers.get(message.receiver?._id);
-                if(receiverSocketId) io.to(receiverSocketId).emit("received_message")
+                if(receiverSocketId) io.to(receiverSocketId).emit("received_message");
             }
+            catch(error){
+                console.error("Error sending message",error);
+                socket.emit("message_error",{error:"Failed to send message"});
+            }
+        })
+
+        //Update messages and notify the sender
+        socket.on("message_read",async({messageIds,senderId})=>{
+            try{
+                await Message.updateMany(
+                    {_id:{$in:messageIds}},
+                    {$set:{messageStatus:"read"}}
+                )
+
+                const senderSocketId=onlineUsers.get(senderId);
+                if(senderSocketId){
+                    messageIds.forEach((messageId)=>{
+                        io.to(senderSocketId).emit("message_status_update",{
+                            messageId,
+                            messageStatus:"read"
+                        })
+                    })
+                }
+            }
+            catch(error) console.error("Error updating message read status",error); 
         })
     })
 }
