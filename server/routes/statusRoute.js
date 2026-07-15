@@ -7,9 +7,8 @@ const router=express.Router();
 
 
 router.post('/',authMiddleware,multerMiddleware,statusController.createStatus);
-router.get('/conversations',authMiddleware,chatController.getConversations);
-router.get('/conversation/:conversationId/messages',authMiddleware,chatController.getMessages);
-router.post('/messages/read',authMiddleware,chatController.markAsRead);
-router.delete('/messages/:messageId',authMiddleware,chatController.deleteMsg);
+router.get('/',authMiddleware,statusController.getStatus);
+router.put('/:statusId/view',authMiddleware,statusController.viewStatus);
+router.delete('/:statusId',authMiddleware,statusController.deleteStatus);
 
 module.exports=router;
