@@ -117,3 +117,10 @@ const deleteStatus=async(req,res)=>{
     }
 }
 
+module.exports={
+    createStatus,
+    getStatus,
+    viewStatus,
+    deleteStatus
+}
+
