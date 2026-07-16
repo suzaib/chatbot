@@ -1,7 +1,18 @@
+import { 
+  createBrowserRouter, 
+  RouterProvider
+ } from "react-router-dom"
+import Login from "./pages/UserLogin/Login"
+
+
+const router=createBrowserRouter([
+  {
+    path:"/user-login",
+    element:<Login/>
+  }
+])
 const App = () => {
-  return (
-    <div className="font-bold">App</div>
-  )
+  return <RouterProvider router={router}/>
 }
 
 export default App
