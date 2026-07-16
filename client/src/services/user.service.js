@@ -60,3 +60,12 @@ const getAllUsers=async()=>{
         throw error.response? error.response.data:error.message;
     }
 }
+
+module.exports={
+    sendOtp,
+    verifyOtp,
+    updateUserProfile,
+    checkUserAuth,
+    logoutUser,
+    getAllUsers
+}
