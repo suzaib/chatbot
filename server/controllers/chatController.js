@@ -71,6 +71,16 @@ const sendMessage=async(req,res)=>{
         //We first populate sender with only the username and profilePicture fields
         //Then do the same and populate the receiver
 
+        //A
+        if(req.io && req.socketUserMap){
+            const receiverSocketId=socketUserMap.get(receiverId);
+            if(receiverSocketId){
+                req.io.to(receiverSocketId).emit("receive_message",populatedMsg);
+                message.messageStatus=delivered;
+                await message.save();
+            }
+        }
+
         return response(res,200,"Message sent successfully",populatedMsg);
         //We do this so that the frontend doesn't need to fetch username and profile pic again from the users, we pass that to the frontend directly
 
@@ -175,6 +185,22 @@ const markAsRead=async(req,res)=>{
             {$set:{messageStatus:"read"}}
         );
 
+        //Notifying the original sender that message is read
+        if(req.io && req.socketUserMap){
+            for(const message of messages){
+                const senderSocketId=req.socketUserMap.get(message.sender.toString());
+                if(senderSocketId){
+                    const updatedMsg={
+                        _id:message._id,
+                        messageStatus:"read"
+                    };
+
+                    req.io.to(senderSocketId).emit("message_read",updatedMsg);
+                    await message.save();
+                }
+            }
+        }
+
         return response(res,200,"Messages marked as read",messages);
     }
     catch(errror){
@@ -198,6 +224,13 @@ const deleteMessage=async(req,res)=>{
         if(msg.sender.toString()!==userId) return response(res,403,"You do not have permission to delete this message");
 
         await msg.deleteOne();
+
+        //Notify the receiver of the message that the message is deleted
+        //No need to notify the sender, he obviously knows since he was the one deleting
+        if(req.io && req.socketUserMap){
+            const receiverSocketId=req.socketUserMap.get(message.receiver.toString());
+            if(receiverSocketId) req.io.to(receiverSocketId).emit("message_deleted",messageId);
+        }
         return response(res,200,"Message deleted");
     }
     catch(error){

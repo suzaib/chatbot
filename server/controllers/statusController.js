@@ -41,7 +41,7 @@ const createStatus=async(req,res)=>{
         .populate("user","username profilePicture")
         .populate("viewer","username profilePicture")
 
-        //Emit socket event
+        //Notify everyone of the new status
         if(req.io && req.socketUserMap){
             //Broadcast to all connecting user except creator
             for(const [connectedUserId,socketId] of req.socketUserMap){
@@ -93,7 +93,6 @@ const viewStatus=async(req,res)=>{
 
             //Notify the owner that a user has viewed their status with the new view count
             if(req.io && req.socketUserMap){
-                //Broadcast to all connecting users except the creator
                 const statusOwnerSocketId=req.socketUserMap.get(status.user?._id.toString());
                 if(statusOwnerSocketId){
                     const viewData={
