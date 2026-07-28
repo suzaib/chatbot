@@ -22,12 +22,12 @@ const useLoginStore=create(
 
             //These are the intial state
             step:1,
-            userPhoneData:null,
+            userEmailData:null,
 
             //These are the functions that will be used to modify the state
             setStep:(step)=>set({step}),
-            setUserPhoneData:(data)=>set({userPhoneData:data}),
-            resetLoginState:()=>set({step:1, userPhoneData:null})
+            setUserEmailData:(data)=>set({userEmailData:data}),
+            resetLoginState:()=>set({step:1,userEmailData:null})
         }),
 
         //Options (How persist should behave)
@@ -41,7 +41,7 @@ const useLoginStore=create(
             //Also functions can't be stored in JSON
             partialize:(state)=>({
                 step:state.step,
-                userPhoneData:state.userPhoneData,
+                userEmailData:state.userEmailData,
             })
         }
     )
