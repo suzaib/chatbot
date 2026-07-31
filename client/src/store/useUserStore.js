@@ -16,3 +16,5 @@ const useUserStore=create(
         }
     )
 )
+
+export default useUserStore;
