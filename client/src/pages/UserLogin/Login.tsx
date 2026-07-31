@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useLoginStore from '../../store/useLoginStore';
 import useUserStore from "../../store/useUserStore";
+import useThemeStore from "../../store/useThemeStore";
 
 //Import everything from yup and put it inside an object named yup
 import * as yup from 'yup';
@@ -46,6 +47,8 @@ const Login = () => {
   const [profilePictureFile,setProfilePictureFile]=useState(null);
   const [error,setError]=useState("");
   const navigate=useNavigation();
+
+  const {theme,setTheme}=useThemeStore();
 
   const {setUser}=useUserStore();
 
