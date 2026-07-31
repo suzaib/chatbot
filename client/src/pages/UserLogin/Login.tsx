@@ -72,7 +72,7 @@ const Login = () => {
   }=useForm({resolver:yupResolver(profileValidationSchema)});
   
   return (
-    <div className={`min-h-screen`}>
+    <div className={`min-h-screen ${theme==='dark'? "bg-gray-900":"bg-gradient-to-br from-green-400 to-blue-500"} flex items-center p-4 overflow-hidden`}>
 
     </div>
   )
