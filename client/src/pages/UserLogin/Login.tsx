@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useLoginStore from '../../store/useLoginStore';
+import useUserStore from "../../store/useUserStore";
 
 //Import everything from yup and put it inside an object named yup
 import * as yup from 'yup';
@@ -13,13 +14,13 @@ const loginValidationSchema=yup
   email:yup.string().trim().email("Please enter valid email").required("Email is required")})
 
 
-const otpValidation=yup
+const otpValidationSchema=yup
 .object()
 .shape({
   otp:yup.string().length(6,"OTP must be exactly 6 digits").required("OTP is required")
 })
 
-const profileValidation=yup
+const profileValidationSchema=yup
 .object()
 .shape({
   username:yup.string().required("username is required"),
@@ -47,9 +48,30 @@ const Login = () => {
   const navigate=useNavigation();
 
   const {setUser}=useUserStore();
+
+  const {
+    register:loginRegister,
+    handleSubmit:handleLoginSubmit,
+    formState:{errors:loginError},
+  }=useForm({resolver:yupResolver(loginValidationSchema)});
+
+  const {
+    handleSubmit=handleOtpSubmit,
+    formState:{errors:otpErrors},
+    setValue:setOtpValue
+  }=useForm({resolver:yupResolver(otpValidationSchema)})
+
+  const {
+    register:profileRegister,
+    handleSubmit:handleProfileSubmit,
+    formState:{errors:profileErrors},
+    watch
+  }=useForm({resolver:yupResolver(profileValidationSchema)});
   
   return (
-    <div>Login</div>
+    <div className={`min-h-screen`}>
+
+    </div>
   )
 }
 
