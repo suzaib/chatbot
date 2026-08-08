@@ -3,6 +3,7 @@ import useLoginStore from '../../store/useLoginStore';
 import useUserStore from "../../store/useUserStore";
 import useThemeStore from "../../store/useThemeStore";
 import { motion } from 'framer-motion';
+import {useOtp} from "../../services/user.service.js";
 
 //Import everything from yup and put it inside an object named yup
 import * as yup from 'yup';
@@ -80,7 +81,12 @@ const Login = () => {
   const onLoginSubmit=async()=>{
     try{
       setLoading(true);
-      if(email)
+      if(email){
+        const response=await sendOtp(email);
+        if(response.status==='success'){
+          
+        }
+      }
     }
   }
 
