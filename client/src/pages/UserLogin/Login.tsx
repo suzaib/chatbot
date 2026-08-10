@@ -3,7 +3,7 @@ import useLoginStore from '../../store/useLoginStore';
 import useUserStore from "../../store/useUserStore";
 import useThemeStore from "../../store/useThemeStore";
 import { motion } from 'framer-motion';
-import {useOtp} from "../../services/user.service.js";
+import {sendOtp,verifyOtp} from "../../services/user.service.js";
 
 
 
@@ -49,9 +49,11 @@ const Login = () => {
   const { step, setStep, userEmailData, setUserEmailData, resetLoginState } = useLoginStore();
   const [email, setEmail] = useState("");
   const [otp, setOTP] = useState(["", "", "", "", "", ""]);
-  const [profilePicture, setProfilePicture] = useState(null);
   const [selectedAvatar, setSelectedAvatar] = useState(avatars[0]);
-  const [profilePictureFile, setProfilePictureFile] = useState(null);
+
+  const [profilePictureFile, setProfilePictureFile] = useState(null); //This stores the actual file
+  const [profilePicture, setProfilePicture] = useState(null);  //This stores the url of the image
+
   const [error, setError] = useState("");
   const navigate = useNavigation();
 
@@ -86,10 +88,94 @@ const Login = () => {
       if(email){
         const response=await sendOtp(email);
         if(response.status==='success'){
-
+          toast.info("OTP is sent to your email");
+          setUserEmailData({email});
+          setStep(2);
         }
       }
     }
+    catch(error){
+      console.error(error);
+      setError(error.message || "Failed to send OTP");
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+  const onOtpSubmit=async()=>{
+    try{
+      setLoading(true);
+      if(!userEmailData) throw new Error("Email data is missing");
+
+      const otpString=otp.join("");
+      let response;
+      if(userEmailData?.email) response=await verifyOtp(email,otpString);
+      if(response.status==='success'){
+        toast.success("Otp is verified successfully");
+        const user=response.data?.user;
+        if(user?.username && user?.profilePicture){
+          setUser(user);
+          toast.success("Welcome to sphinx");
+          navigate('/');
+          resetLoginState();
+        }
+        else setStep(3);
+      }
+    }
+    catch(error){
+      console.error(error);
+      setError(error.message || "Failed to verify OTP");
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+  const handleChange=(e)=>{
+    const file=e.target.files[0];
+    if(file){
+      setProfilePictureFile(file);
+      setProfilePicture(URL.createObjectURL(file));
+    }
+  }
+
+  const onProfileSubmit=async(data)=>{
+    try{
+      setLoading(true);
+      const formData=new FormData();
+      formData.append("username",data.username);
+      formData.append("agreed",data.agreed);
+      if(profilePictureFile) formData.append("media",profilePictureFile);
+      else formData.append("profilePicture",selectedAvatar);
+
+      await updatedUserProfile(formData);
+      toast.success("Welcome back to sphinx");
+      navigate('/');
+      resetLoginState();
+    }
+    catch(error){
+      console.error(error);
+      setError(error.message || "Failed to update user profile");
+    }
+    finally{
+      setLoading(false);
+    }
+  }
+
+  const handleOtpChange=(idx,val)=>{
+    const newOtp=[...otp];
+    newOtp[idx]=val;
+    setOtp(netOtp);
+    setOtpValue("otp",newOtp.join(""));
+    if(val && idx<5) document.getElementById(`otp-${idx+1}`)?.focus();
+  }
+
+  const handleBack=()=>{
+    setStep(1);
+    setUserEmailData(null);
+    setOtp(["","","","","",""]);
+    setError("");
   }
 
   const ProgressBar = () => {
@@ -125,7 +211,7 @@ const Login = () => {
       {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
       {step === 1 && (
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleLoginSubmit(onLoginSubmit)}>
           <p className={`text-center ${theme === 'dark' ? "text-gray-300" : "text-gray-600"} mb-4  `}>
             Enter Your Email to recieve a verification code
           </p>
