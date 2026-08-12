@@ -32,9 +32,14 @@ const ProtectedRoute=()=>{
     return <Outlet/>
 };
 
-const publicRoute=()=>{
+const PublicRoute=()=>{
     const isAuthenticated=useUserStore(state=> state.isAuthenticated);
-    if(isAuthenticated) return <Navigate to="/home" replace/>
+    if(isAuthenticated) return <Navigate to="/" replace/>
     return <Outlet/>
 }
 
+
+module.exports={
+    ProtectedRoute,
+    PublicRoute,
+}
