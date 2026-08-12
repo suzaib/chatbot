@@ -6,13 +6,10 @@ import Login from "./pages/UserLogin/Login"
 
 import {ToastContainer} from 'react-toastify';
 import 'react-toastify/ReactToastify.css';
-
-const router=createBrowserRouter([
-  {
-    path:"/user-login",
-    element:<Login/>
-  }
-])
+import UserDetails from "./components/UserDetails";
+import Status from "./pages/StatusSection/Status";
+import Settings from "./pages/SettingsSection/Settings";
+import HomePage from "./components/HomePage";
 
 const router=createBrowserRouter([
   {
@@ -32,41 +29,21 @@ const router=createBrowserRouter([
         element:<HomePage/>
       },
       {
-        path:"/pro"
+        path:"/user-profile",
+        element:<UserDetails/>
+      },
+      {
+        path:"/status",
+        element:<Status/>
+      },
+      {
+        path:"/settings",
+        element:<Settings/>
       }
     ]
   }
 ])
 
-const router = createBrowserRouter([
-    {
-        element: <PublicRoute />,
-        children: [
-            {
-                path: "/user-login",
-                element: <Login />
-            }
-        ]
-    },
-
-    {
-        element: <ProtectedRoute />,
-        children: [
-            {
-                path: "/",
-                element: <HomePage/>
-            },
-            {
-                path: "/profile",
-                element: <Profile />
-            },
-            {
-                path: "/settings",
-                element: <Settings />
-            }
-        ]
-    }
-]);
 const App = () => {
   return (
   <>
