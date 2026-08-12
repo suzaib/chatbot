@@ -13,12 +13,67 @@ const router=createBrowserRouter([
     element:<Login/>
   }
 ])
+
+const router=createBrowserRouter([
+  {
+    element:<PublicRoute/>,
+    children:[
+      {
+        path:"/user-login",
+        element:<Login/>
+      }
+    ]
+  },
+  {
+    element:<ProtectedRoute/>,
+    children:[
+      {
+        path:"/home",
+        element:<HomePage/>
+      },
+      {
+        path:"/pro"
+      }
+    ]
+  }
+])
+
+const router = createBrowserRouter([
+    {
+        element: <PublicRoute />,
+        children: [
+            {
+                path: "/user-login",
+                element: <Login />
+            }
+        ]
+    },
+
+    {
+        element: <ProtectedRoute />,
+        children: [
+            {
+                path: "/",
+                element: <HomePage/>
+            },
+            {
+                path: "/profile",
+                element: <Profile />
+            },
+            {
+                path: "/settings",
+                element: <Settings />
+            }
+        ]
+    }
+]);
 const App = () => {
-  return 
+  return (
   <>
     <ToastContainer position='top-right' autoClose={3000}/>
     <RouterProvider router={router}/>
   </>
+  )
 }
 
 export default App
