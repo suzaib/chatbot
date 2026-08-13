@@ -5,8 +5,8 @@ const useLayoutStore=create(
     persist(
         (set)=>({
             activeTab:'chats',
-            selectedChat:null,
-            setSelectedChat:(chat)=>set({setSelectedChat}),
+            selectedContact:null,
+            setSelectedContact:(contact)=>set({setSelectedContact}),
             setActiveTab:(tab)=> set({activeTab})
         }),
         {
