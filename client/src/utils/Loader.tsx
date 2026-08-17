@@ -1,11 +1,9 @@
 import { motion } from "framer-motion";
 import { FaWhatsapp } from "react-icons/fa";
 
-interface LoaderProps {
-  progress?: number;
-}
 
-export default function Loader({ progress = 0 }: LoaderProps) {
+
+const Loader=({ progress = 0 })=>{
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-gradient-to-br from-green-400 to-blue-500">
       <motion.div
@@ -37,3 +35,6 @@ export default function Loader({ progress = 0 }: LoaderProps) {
     </div>
   );
 }
+
+export default Loader;
+

@@ -2,12 +2,15 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import useUserStore from "./store/useUserStore";
 import {checkUserAuth} from "./services/user.service";
+import Loader from "./utils/Loader";
 
+//Before allowing the user to access the pages within, check if they are logged in or not
+//If they aren't, send them to login page
 const ProtectedRoute=()=>{
-    const location=useLocation();
+    const location=useLocation(); //Contains information about the current URL
     const [isChecking,setIsChecking]=useState(true);
 
-    const {isAuthenticated,setUser,cleanUser}=useUserStore();
+    const {isAuthenticated,setUser,clearUser}=useUserStore();
     useEffect(()=>{
         const verifyAuth=async()=>{
             try{

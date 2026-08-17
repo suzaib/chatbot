@@ -3,7 +3,9 @@ import { Link, useLocation } from "react-router-dom";
 import useUserStore from "../store/useUserStore";
 import useThemeStore from "../store/themeStore";
 import useLayoutStore from "../store/useLayoutStore";
-import { FaWhatsapp } from "react-icons/fa";
+import { FaWhatsapp, FaUserCircle, FaCog } from "react-icons/fa";
+import { MdRadioButtonChecked } from "react-icons/md";
+
 import {motion} from 'framer-motion';
 
 const Sidebar = () => {
@@ -32,7 +34,6 @@ const Sidebar = () => {
 
   //When we open a chat on mobile, the chat covers the screen completely, therefore no sidebar
   if(isMobile && selectedContact) return null; 
-
   const SidebarContent=(
     <>
       <Link 
@@ -44,19 +45,27 @@ const Sidebar = () => {
       <Link 
         to="/status"
         className={`${isMobile? "":"mb-8"} ${activeTab==='chats' && 'bg-gray-300 shadow-sm p-2 rounded-full'} focus:outline-none`}>
-        <FaWhatsapp className={`h-6 w-6 ${activeTab==='chats'? theme==='dark'?"text-gray-800":"":theme==='dark'? "text-gray-300":"text-gray-800"}`}/>
+        <MdRadioButtonChecked className={`h-6 w-6 ${activeTab==='chats'? theme==='dark'?"text-gray-800":"":theme==='dark'? "text-gray-300":"text-gray-800"}`}/>
+      </Link>
+
+      {!isMobile && <div className="flex-grow"/>}
+      <Link 
+        to="/user-profile"
+        className={`${isMobile? "":"mb-8"} ${activeTab==='profile' && 'bg-gray-300 shadow-sm p-2 rounded-full'} focus:outline-none`}>
+        {user?.userProfile ? (
+          <img
+            src={user?.profilePicture}
+            alt="user"
+            className="h-6 w-6 rounded-full"/>
+        ):(
+          <FaUserCircle className={`h-6 w-6 ${activeTab==='profile'? theme==='dark'?"text-gray-800":"":theme==='dark'? "text-gray-300":"text-gray-800"}`}/>
+        )}
       </Link>
 
       <Link 
-        to="/"
-        className={`${isMobile? "":"mb-8"} ${activeTab==='chats' && 'bg-gray-300 shadow-sm p-2 rounded-full'} focus:outline-none`}>
-        <FaWhatsapp className={`h-6 w-6 ${activeTab==='chats'? theme==='dark'?"text-gray-800":"":theme==='dark'? "text-gray-300":"text-gray-800"}`}/>
-      </Link>
-
-      <Link 
-        to="/"
-        className={`${isMobile? "":"mb-8"} ${activeTab==='chats' && 'bg-gray-300 shadow-sm p-2 rounded-full'} focus:outline-none`}>
-        <FaWhatsapp className={`h-6 w-6 ${activeTab==='chats'? theme==='dark'?"text-gray-800":"":theme==='dark'? "text-gray-300":"text-gray-800"}`}/>
+        to="/settings"
+        className={`${isMobile? "":"mb-8"} ${activeTab==='settings' && 'bg-gray-300 shadow-sm p-2 rounded-full'} focus:outline-none`}>
+        <FaCog className={`h-6 w-6 ${activeTab==='settings'? theme==='dark'?"text-gray-800":"":theme==='dark'? "text-gray-300":"text-gray-800"}`}/>
       </Link>
     </>
   )
