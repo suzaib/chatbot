@@ -4,9 +4,7 @@ import {motion} from 'framer-motion';
 
 const HomePage = () => {
 
-  const setSelectedContact=useLayoutStore(
-    (state)=>state.setSelectedContact
-  );
+
 
   const [allUsers,setAllUsers]=useState([]);
   const getUser=async()=>{
@@ -29,7 +27,7 @@ const HomePage = () => {
         animate={{opacity:1}}
         transition={{duration:0.5}}
         className="h-full">
-        <ChatList contacts={allUsers} setSelectedContact={setSelectedContact}/>
+        <ChatList contacts={allUsers}/>
       </motion.div>
     </Layout>
   )
