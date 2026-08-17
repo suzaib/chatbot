@@ -146,7 +146,7 @@ const getAllUsers=async(req,res)=>{
 
                 return {
                     ...user,
-                    conversation:conversation,
+                    conversation:conversation || null
                 }
             })
         )
