@@ -10,6 +10,8 @@ import UserDetails from "./components/UserDetails";
 import Status from "./pages/StatusSection/Status";
 import Settings from "./pages/SettingsSection/Settings";
 import HomePage from "./components/HomePage";
+import { useEffect } from "react";
+import {initializeSocket} from './services/chat.service.js';
 
 const router=createBrowserRouter([
   {
@@ -45,6 +47,22 @@ const router=createBrowserRouter([
 ])
 
 const App = () => {
+
+  const {user}=useUserStore();
+
+  useEffect(()=>{
+    if(user?._id){
+      const socket=initializeSocket();
+
+    }
+
+    //Cleanup function
+    return ()=>{
+      disconnectSocket();
+    }
+  },[user])
+
+
   return (
   <>
     <ToastContainer position='top-right' autoClose={3000}/>
