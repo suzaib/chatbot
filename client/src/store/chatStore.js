@@ -274,9 +274,66 @@ const useChatStore=create((set,get)=>({
             set({error:error.response?.data?.message || error.message})
             return false;
         }
+    },
+
+    //Add or Change Reactions
+    addReaction:async(messageId,emoji)=>{
+        const socket=getSocket();
+        const {currentUser}=get();
+        if(!socket || !currentUser) return;
+
+        socket.emit("add_reaction",{
+            messageId,
+            emoji,
+            userId:currentUser?._id
+        })
+    },
+
+    //Now we create typing indicator events which will be called when the user starts or stops typing
+    //Starting typing indicator
+    startTyping:(receiverId)=>{
+        const {currentConversation}=get();
+        const socket=getSocket();
+        if(!socket || !currentConversation || !receiverId) return;
+
+        socket.emit("typing_start",{
+            conversationId:currentConversation,
+            receiverId
+        })
+    },
+
+    //Stop typing indicator
+    stopTyping:(receiverId)=>{
+        const {currentConversation}=get();
+        const socket=getSocket();
+        if(!socket || !currentConversation || receiverId) return;
+
+        socket.emit("typing_stop",{
+            conversationId:currentConversation,
+            receiverId
+        })
+    },
+
+    //Check whether the user is typing or not
+    isUserTyping:(userId)=>{
+        const {typingUsers,currentConversation}=get();
+        if(!currentConversation || !typingUsers.has(currentConversation) || !userId) return false;
+
+        return typingUsers.get(currentConversation).has(userId);
+    },
+
+    //Is user online
+    isUserOnline:(userId)=>{
+        if(!userId) return null;
+        const {onlineUsers}=get();
+        return onlineUser.get(userId)?.isOnline || false;
+    },
+
+    getUserLastSeen:(userId)=>{
+        if(!userId) return null;
+        const {onlineUsers}=get();
+        return onlineUsers.get(userId)?.lastSeen || null;
     }
-
-
 
 
 }))
