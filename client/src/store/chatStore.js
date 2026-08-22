@@ -95,10 +95,135 @@ const useChatStore=create((set,get)=>({
             })
         })
 
-        //Emit status check for all users in conversation list
+        //Emit status check for all users, that is, check which user is online or offline
         const {conversations}=get();
-        if()
+        if(conversations?.data.length>0){
+            conversations.data?.forEach((conversation)=>{
+                const otherUser=conversation.participants.find(
+                    (p)=>p._id!==get().currentUser._id
+                );
+
+                if(otherUser._id){
+                    socket.emit("get_user_status",otherUser._id,(status)=>{
+                        set((status)=>{
+                            const newOnlineUsers=new Map(state.onlineUsers);
+                            newOnlineUsers.set(state.userId,{
+                                isOnline:state.isOnline,
+                                lastSeen:state.lastSeen
+                            });
+                            return {onlineUser:newOnlineUsers}
+                        })
+                    })
+                }
+            })
+        }
+
+    },
+
+    setCurrentUser:(user)=>set({currentUser}),
+
+    //Fetch all conversations
+    fetchConversations:async()=>{
+        set({loading:true, error:null});
+        try{
+            const {data}=await axiosInstance.get("/chats/conversations");
+            set({conversations:data,loading:false}),
+            get().initSocketListeners();
+
+            return data;
+        }
+        catch(error){
+            set({
+                error:error?.response?.data?.message || error?.message,
+                loading:false
+            });
+            return null;
+        }
+    },
+
+    //Fetch messages for a conversation
+    fetchMessages:async(conversationId)=>{
+        if(!conversationId) return;
+
+        set({loading:true,error:false});
+
+        try{
+            const {data}=await axiosInstance.get(`/chats/conversations/${conversationId}/messages`);
+
+            const messageArray=data.data || data || [];
+
+            set({
+                messages:messageArray,
+                currentConversation:conversationId,
+                loading:false
+            })
+
+            //Mark unread messages as read
+
+            return messageArray;
+        }
+        catch(error){
+            set({
+                error:error?.response?.data?.message || error?.message,
+                loading:false
+            })
+
+            return [];
+        }
+    },
+
+    //Send messages in real time
+    sendMessage:async(formData)=>{},
 
 
+    //Receive Messages
+    //The socket gives us the message but we still need to update our zustand store with the message and update the UI as well
+    receiveMessage:(message)=>{
+        if(!message) return ;
+        const {currentConversation,currentUser,messages}=get();
+
+        //If the message is already in the message array, that is, it is already in the UI, just return
+        const messageExists=messages.some((msg)=>msg._id === message._id)
+        if(messageExists) return;
+
+        //Updating the zustand store to store these messages
+        if(message.conversation===currentConversation){
+            set((state)=>({
+                messages:[...state.messages,message]
+            }));
+        }
+
+        //Update conversation preview and unread count
+        //We update the unread count only when we receive a message and not when we send a message. simple yet needs to be implemented
+        set((state)=>{
+            const updateConversations=state.conversations?.data?.map((conv)=>{
+                if(conv._id===message.conversation){
+                    return {
+                        ...conv,
+                        lastMessage:message,
+                        unreadCount:message?.receiver?._id===currentUser?._id? (conv.unreadCount || 0)+1:conv.unreadCount || 0
+                    }
+                }
+
+                return conv;
+            })
+
+            return {
+                conversations:{
+                    ...state.conversations,
+                    data:updatedConversations
+                },
+            }
+        })
+    },
+
+
+    //Mark as read
+    markMessagesAsRead:async()=>{
+        const {messages,currentUser}=get();
     }
+
+
+
+
 }))
