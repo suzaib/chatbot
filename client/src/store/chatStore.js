@@ -260,7 +260,7 @@ const useChatStore=create((set,get)=>({
     },
 
     //Deleting Messages
-    deleteMessage:aysnc(messageId)=>{
+    deleteMessage:async(messageId)=>{
         try{
             await axiosInstance.delete(`/chats/messages/${messageId}`);
 
