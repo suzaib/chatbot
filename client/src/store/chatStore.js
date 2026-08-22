@@ -220,7 +220,60 @@ const useChatStore=create((set,get)=>({
 
     //Mark as read
     markMessagesAsRead:async()=>{
+
+        //Taking all the messages and the current User
         const {messages,currentUser}=get();
+
+        //If there are no messages or no user, there is nothing to do , so just return
+        if(!messages.length || !currentUser) return;
+
+        //Find unread messages ==> get their ids ==> remove any undefined values
+        const unreadIds=messages.filter((msg)=> msg.messageStatus !== 'read' && msg.receiver?._id === currentUser?._id).map((msg)=> msg._id).filter(Boolean) //Boolean is needed to remove any falsy values
+
+        //If there are no unread messages, return
+        if(!unreadIds.length) return;
+
+        try{
+
+            //Now we tell our server, that mark these messages as read, so the backend updates that in the database
+            const {data}=await axiosInstance.put("/chats/messages/read",{
+                messageIds:unreadIds
+            });
+
+            //Now we update the frontend immediately
+            set((state)=>({
+                message:state.messages.map((msg)=> unreadIds.includes(msg._id)? {...msg,messageStatus:"read"}:msg)
+            }))
+
+            //Tell the sender that these messages were read 
+            const socket=getSocket();
+            if(socket){
+                socket.emit("message_read",{
+                    messageIds:unreadIds,
+                    senderIds:messages[0]?.sender?._id
+                })
+            }
+        }
+        catch(error){
+            console.error("Failed to mark messages as read",error);
+        }
+    },
+
+    //Deleting Messages
+    deleteMessage:aysnc(messageId)=>{
+        try{
+            await axiosInstance.delete(`/chats/messages/${messageId}`);
+
+            set((state)=>({
+                messages:state.messages?.filter((msg)=> msg?._id!==messageId)
+            }))
+            return true;
+        }
+        catch(error){
+            console.error("error deleting message",error);
+            set({error:error.response?.data?.message || error.message})
+            return false;
+        }
     }
 
 
