@@ -1,0 +1,1 @@
+getUserLastSeen in chatStore.js (check once)

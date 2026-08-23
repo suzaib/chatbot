@@ -159,6 +159,8 @@ const useChatStore=create((set,get)=>({
             })
 
             //Mark unread messages as read
+            const {markMessagesAsRead}=get();
+            markMessagesAsRead();
 
             return messageArray;
         }
@@ -173,7 +175,42 @@ const useChatStore=create((set,get)=>({
     },
 
     //Send messages in real time
-    sendMessage:async(formData)=>{},
+    sendMessage:async(formData)=>{
+        const senderId=formData.get("sender_id");
+        const receiverId=formData.get("receiver_id");
+        const media=formData.get("media");
+        const content=formData.get("content");
+        const messageStatus=formData.get("messageStatus");
+
+        const socket=getSocket();
+
+        const {conversations}=get();
+        let conversationId=null;
+        if(conversation?.data?.length){
+            const conversation=conversations.data.find((conv)=>
+            conv.participants.some((p)=> p._id===senderId) && 
+            conv.participants.some((p)=>p._id==receiverId));
+
+            if(conversation){
+                conversationId=conversation._id;
+                set({currentConversation:conversationId});
+            }
+        }
+
+        //Temp message before actual response
+        const tempId=`temp-${Date.now()}`;
+        const optimisticMessage={
+            _id:tempId,
+            sender:{_id:senderId},
+            receiver:{_id:receiverId},
+            conversation:conversationId,
+            imageOrVideoUrl:media && typeof media!=='string' ? URL.createObjectURL(media):null,
+            content:content,
+            contentType:media? media.type.startsWith("image")? "image":"video":"text",
+            createdAt:new Date().toISOString(),
+            messageStatus,
+        }
+    },
 
 
     //Receive Messages
@@ -191,6 +228,9 @@ const useChatStore=create((set,get)=>({
             set((state)=>({
                 messages:[...state.messages,message]
             }));
+
+            //Automatically mark as read
+            if(message.receiver?._id===currentUser?._id) get().markMessagesAsRead();
         }
 
         //Update conversation preview and unread count
@@ -333,7 +373,20 @@ const useChatStore=create((set,get)=>({
         if(!userId) return null;
         const {onlineUsers}=get();
         return onlineUsers.get(userId)?.lastSeen || null;
+    },
+
+    //Reset the state using  the cleaner function
+    cleanup:()=>{
+        set({
+            conversations:[],
+            currentConversation:null,
+            messages:[],
+            onlineUsers:new Map(),
+            typingUsers:new Map(),
+        })
     }
 
 
 }))
+
+export default useChatStore;
