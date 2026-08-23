@@ -49,18 +49,25 @@ const router=createBrowserRouter([
 const App = () => {
 
   const {user}=useUserStore();
+  const {setCurrentUser,initSocketListeners,cleanup}=useChatStore();
 
   useEffect(()=>{
     if(user?._id){
       const socket=initializeSocket();
 
+      if(socket){
+        setCurrentUser(user);
+        initSocketListeners();
+
+
     }
 
     //Cleanup function
     return ()=>{
+      cleanup();
       disconnectSocket();
     }
-  },[user])
+  },[user,setCurrentUser,initSocketListeners,cleanup])
 
 
   return (
