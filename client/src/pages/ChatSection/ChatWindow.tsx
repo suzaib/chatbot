@@ -138,6 +138,12 @@ const ChatWindow = ({selectedContact,setSelectedContact}) => {
       console.error("Failed to send message",error);
     }
   }
+
+  const renderDateSeparator=(date)=>{
+    if(!isValidDate(date)) return null;
+
+    let dateString=
+  }
   return (
     <div>ChatWindow</div>
   )

@@ -197,7 +197,8 @@ const useChatStore=create((set,get)=>({
             }
         }
 
-        //Temp message before actual response
+        //Suppose we send a message, then for it to be displayed on our screen, it first needs to go to the server, get stored in the backend and then be showed on our UI
+        //But this is time taking so we immediately show the msg in our chat and after the whole processes is finished we replace its temp id by the actual mongodb id
         const tempId=`temp-${Date.now()}`;
         const optimisticMessage={
             _id:tempId,
@@ -209,6 +210,36 @@ const useChatStore=create((set,get)=>({
             contentType:media? media.type.startsWith("image")? "image":"video":"text",
             createdAt:new Date().toISOString(),
             messageStatus,
+        };
+
+        set((state)=>({
+            messages:[...state.messages,optimisticMessage]
+        }));
+
+        try{
+            const {data}=await axiosInstance.post("/chats/send-message",formData,
+                {headers:{"Content-Type":"multipart/form-data"}}
+            );
+
+            const messageData=data.data || data;
+
+            //Replace optimistice message with real one
+            set((state)=>({
+                messages:state.messages.map((msg)=>
+                msg._id===tempId? messageData:msg)
+            }));
+
+            return messageData;
+        }
+        catch(error){
+            console.error("Error sending message",error);
+            set((state)=>({
+                messages:state.messages.map((msg)=>
+                msg._id===tempId? {...msg,messageStatus:"failed"}:msg),
+                error:error?.response?.data?.message || error?.message
+            }));
+
+            throw error;
         }
     },
 
