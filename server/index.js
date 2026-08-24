@@ -52,7 +52,7 @@ app.use((req,res,next)=>{
 
 //Routes
 app.use('/api/auth',authRoute);
-app.user('/api/chat',chatRoute);
+app.user('/api/chats',chatRoute);
 app.use('/api/status',statusRoute);
 
 

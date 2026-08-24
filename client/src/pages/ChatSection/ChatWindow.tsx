@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react"
 import useChatStore from "../../store/useChatStore";
 import { isToday, isYesterday, format } from 'date-fns';
-import { FaArrowLeft, FaEllipsisV, FaLock, FaVideo } from "react-icons/fa";
+import { FaArrowLeft, FaEllipsisV, FaLock, FaSmile, FaTimes, FaVideo } from "react-icons/fa";
+import MessageBubble from "./MessageBubble";
 
 //Check first whether it is a date object and secondly, does it has valid date
 const isValidDate = (date) => {
@@ -13,7 +14,7 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
   const [message, setMessage] = useState("");
 
   //Controls whether the emoji picker icon is visible or not
-  const [showEmojiPicker, setEmojiPicker] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   //Controls whether the file menu is visible or not
   const [showFileMenu, setShowFileMenu] = useState(false);
@@ -245,14 +246,52 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
       </div>
 
       <div className={`flex-1 p-4 overflow-y-auto ${theme==='dark'?"bg-[#191a1a]":"bg-[rgb(241,236,239)]"}`}>
-        {Object.entries(groupMessages).map(([date,msg])=>(
+        {Object.entries(groupMessages).map(([date,msgs])=>(
           <React.Fragment key={date}>
             {renderDateSeparator(new Date(date))}
             {msgs.filter((msg)=>msg.conversation===selectedContact?.conversation?._id).map((msg)=>(
-              <me
+              <MessageBubble
+                key={msg._id || msg.tempId}
+                message={msg}
+                theme={theme}
+                currentUser={user}
+                onReact={handleReaction}
+                deleteMessage={deleteMessage}
+              />
             ))}
           </React.Fragment>
         ))}
+        <div ref={messageEndRef}/>
+      </div>
+      {filePreview && (
+        <div className="relative p-2">
+          <img 
+            src={filePreview}
+            alt="file-preview"
+            className="w-80 object-cover rounded shadow-lg mx-auto"
+          />
+          <button
+            onClick={()=>{
+              setSelectedFile(null)
+              setFilePreview(null)
+            }}
+            className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1">
+            <FaTimes className="h-4 w-4"/>
+          </button>
+        </div>
+      )}
+
+      <div className={`p-4 flex items-center space-x-2 ${theme==='dark'? "bg-[#303430]":"bg-white"}`}>
+        <button
+          className="focus:outline-none"
+          onClick={()=>setShowEmojiPicker(!showEmojiPicker)}>
+          <FaSmile className={`h-6 w-6 ${theme==='dark'? "text-gray-400":"text-gray-500"}`}/>
+        </button>
+        {showEmojiPicker && (
+          <div ref={emojiPickerRef} className="absolute left-0 bottom-16 z-50">
+            
+          </div>
+        )}
       </div>
     </div>
   )
