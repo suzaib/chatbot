@@ -7,9 +7,12 @@ const useOutsideClick=(ref,callback)=>{
             if(ref.current && !ref.current.contains(event.target)) callback();
         }
 
+        //Whenver the user presses mouse down button anywhere, call the handleOutsideClick function
         document.addEventListener("mousedown",handleOutsideClick);
+
+        //When the component disappears, remove the attached event listener
         return ()=>{
-            document.addEventListener("mousedown",handleOutsideClick);
+            document.removeEventListener("mousedown",handleOutsideClick);
         }
     },[ref,callback])
 }

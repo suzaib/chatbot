@@ -1,6 +1,9 @@
 import { useRef, useState } from "react";
 import { FaCheck, FaCheckDouble, FaPlus, FaSmile } from "react-icons/fa";
 import {HiDotsVertical} from "react-icons/hi";
+import {RxCross2} from "react-icons/rx";
+import useOutsideClick from "../../hooks/useOutsideClick";
+import EmojiPicker from "emoji-picker-react";
 
 const MessageBubble = ({ message, theme, onReact, currentUser, deleteMessage }) => {
 
@@ -27,7 +30,19 @@ const MessageBubble = ({ message, theme, onReact, currentUser, deleteMessage }) 
     onReact(message._id, emoji);
     setShowEmojiPicker(false);
     setShowReactions(false);
-  }
+  };
+
+  useOutsideClick(emojiPickerRef,()=>{
+    if(showEmojiPicker) setShowEmojiPicker(false);
+  });
+
+    useOutsideClick(reactionMenuRef,()=>{
+    if(showReactions) setShowReactions(false);
+  });
+
+    useOutsideClick(optionRef,()=>{
+    if(showOptions) setShowOptions(false);
+  });
 
   if (message === 0) return;
 
@@ -100,6 +115,37 @@ const MessageBubble = ({ message, theme, onReact, currentUser, deleteMessage }) 
             >
               <FaPlus className="h-4 w-4 text-gray-300"/>
             </button>
+          </div>
+        )}
+
+        {showEmojiPicker && (
+          <div
+            ref={emojiPickerRef}
+            className="absolute left-0 mb-6 z-50"
+          >
+            <div className="relative">
+              <EmojiPicker
+                onEmojiClick={(emojiObject)=>handleReact(emojiObject.emoji)}
+                theme={theme}
+              />
+
+              <button 
+                onClick={()=>setShowEmojiPicker(false)}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              >
+                <RxCross2/>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {message.reactions && message.reactions.length>0 && (
+          <div className={`absolute -bottom-5 ${isUserMessage? "right-2":"left-2"} ${theme==='dark'? "bg-[#2a3942]":"bg-gray-200"} rounded-full px-2 shadow-md`}>
+            {message.reactions.map((reaction,idx)=>(
+              <span key={idx} className="mr-1">
+                {reaction.emoji}
+              </span>
+            ))}
           </div>
         )}
       </div>
