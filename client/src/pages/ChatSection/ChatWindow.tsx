@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import useChatStore from "../../store/useChatStore";
 import { isToday, isYesterday, format } from 'date-fns';
-import { FaArrowLeft, FaEllipsisV, FaLock, FaSmile, FaTimes, FaVideo } from "react-icons/fa";
+import { FaArrowLeft, FaEllipsisV, FaFile, FaImage, FaLock, FaPaperclip, FaPaperPlane, FaSmile, FaTimes, FaVideo } from "react-icons/fa";
 import MessageBubble from "./MessageBubble";
+import EmojiPicker from 'emoji-picker-react';
 
 //Check first whether it is a date object and secondly, does it has valid date
 const isValidDate = (date) => {
@@ -163,47 +164,47 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
   //We group all valid messages by the date they were created
   //Just like whatsapp on top shows dates like 25/03/2003 and under it shows all the messages on that day, we are doing exactly that
   //First we check whether the messages is actually an array, if it is, then we process it, otherwise we simply return {}
-  const groupMessages=Array.isArray(messages)? messages.reduce((acc,message)=>{
+  const groupMessages = Array.isArray(messages) ? messages.reduce((acc, message) => {
 
     //If the message doesn't have a creation date, it skips that message
-    if(!message.createdAt) return acc;
+    if (!message.createdAt) return acc;
 
     //We then convert createdAt in a JS date
-    const date=new Date(message.createdAt);
+    const date = new Date(message.createdAt);
 
     //And then check if the date is valid, if it is
-    if(isValidDate(date)){
-      const dateString=format(date,"yyyy-MM-dd");
+    if (isValidDate(date)) {
+      const dateString = format(date, "yyyy-MM-dd");
 
       //If that particular date string isn't there, create a new array and push the message inside it
-      if(!acc[dateString]) acc[dateString]=[];
+      if (!acc[dateString]) acc[dateString] = [];
       acc[dateString].push(message);
     }
-    else console.error("Invalid date for message",message);
+    else console.error("Invalid date for message", message);
 
     return acc;
-  },{}):{};
+  }, {}) : {};
 
-  const handleReaction=(messageId,emoji)=>{
-    addReactions(messageId,emoji);
+  const handleReaction = (messageId, emoji) => {
+    addReactions(messageId, emoji);
   }
 
-  if(!selectedContact) return(
+  if (!selectedContact) return (
     <div className="flex-1 flex flex-col items-center justify-center mx-auto h-screen text-center">
       <div className="max-w-md">
-        <img 
+        <img
           src={whatsappImage}
           alt="chat-app"
           className="w-full h-auto"
         />
-        <h2 className={`text-3xl font-semibold mb-4 ${theme==='dark'? "text-white":"text-black"}`}>
+        <h2 className={`text-3xl font-semibold mb-4 ${theme === 'dark' ? "text-white" : "text-black"}`}>
           Select a conversation to start chatting
         </h2>
-        <p className={`mb-6 ${theme==='dark'? "text-gray-400":"text-gray-600"}`}>
+        <p className={`mb-6 ${theme === 'dark' ? "text-gray-400" : "text-gray-600"}`}>
           Choose a contact from the list on the left side to begin messaging
         </p>
-        <p className={`text-sm mt-8 flex items-center justify-center gap-2 ${theme==='dark'? "text-gray-400":"text-gray-600"}`}>
-          <FaLock className="h-4 w-4"/>
+        <p className={`text-sm mt-8 flex items-center justify-center gap-2 ${theme === 'dark' ? "text-gray-400" : "text-gray-600"}`}>
+          <FaLock className="h-4 w-4" />
           Your personal messages are end to end encrypted
         </p>
       </div>
@@ -211,13 +212,13 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
   )
   return (
     <div className="flex-1 h-screen w-full flex flex-col">
-      <div className={`p-4 flex items-center ${theme==='dark'? "bg-[#303430] text-white":"bg-[rgb(239,242,245)] text-gray-600"}`}>
-        <button 
+      <div className={`p-4 flex items-center ${theme === 'dark' ? "bg-[#303430] text-white" : "bg-[rgb(239,242,245)] text-gray-600"}`}>
+        <button
           className="mr-2 focus:outline-none"
-          onClick={()=>setSelectedContact(null)}>
-          <FaArrowLeft className="h-6 w-6"/>
+          onClick={() => setSelectedContact(null)}>
+          <FaArrowLeft className="h-6 w-6" />
         </button>
-        <img 
+        <img
           src={selectedContact?.profilePicture}
           alt={selectedContact?.username}
           className="h-10 w-10 rounded-full"
@@ -227,29 +228,29 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
             {selectedContact?.username}
           </h2>
 
-          {isTyping? (
+          {isTyping ? (
             <div>Typing...</div>
-          ):(
-            <p className={`text-sm ${theme==='dark'? "text-gray-400":"text-gray-500"}`}>
-              {online? "Online": lastSeen? `Last Seen ${format(new Date(lastSeen),"HH:mm")}`:"Offline"}
+          ) : (
+            <p className={`text-sm ${theme === 'dark' ? "text-gray-400" : "text-gray-500"}`}>
+              {online ? "Online" : lastSeen ? `Last Seen ${format(new Date(lastSeen), "HH:mm")}` : "Offline"}
             </p>
           )}
         </div>
         <div className="flex items-center space-x-4">
           <button className="focus:outline-none">
-            <FaVideo className="h-5 w-5"/>
+            <FaVideo className="h-5 w-5" />
           </button>
           <button className="focus:outline-none">
-            <FaEllipsisV className="h-5 w-5"/>
+            <FaEllipsisV className="h-5 w-5" />
           </button>
         </div>
       </div>
 
-      <div className={`flex-1 p-4 overflow-y-auto ${theme==='dark'?"bg-[#191a1a]":"bg-[rgb(241,236,239)]"}`}>
-        {Object.entries(groupMessages).map(([date,msgs])=>(
+      <div className={`flex-1 p-4 overflow-y-auto ${theme === 'dark' ? "bg-[#191a1a]" : "bg-[rgb(241,236,239)]"}`}>
+        {Object.entries(groupMessages).map(([date, msgs]) => (
           <React.Fragment key={date}>
             {renderDateSeparator(new Date(date))}
-            {msgs.filter((msg)=>msg.conversation===selectedContact?.conversation?._id).map((msg)=>(
+            {msgs.filter((msg) => msg.conversation === selectedContact?.conversation?._id).map((msg) => (
               <MessageBubble
                 key={msg._id || msg.tempId}
                 message={msg}
@@ -261,37 +262,92 @@ const ChatWindow = ({ selectedContact, setSelectedContact }) => {
             ))}
           </React.Fragment>
         ))}
-        <div ref={messageEndRef}/>
+        <div ref={messageEndRef} />
       </div>
       {filePreview && (
         <div className="relative p-2">
-          <img 
+          <img
             src={filePreview}
             alt="file-preview"
             className="w-80 object-cover rounded shadow-lg mx-auto"
           />
           <button
-            onClick={()=>{
+            onClick={() => {
               setSelectedFile(null)
               setFilePreview(null)
             }}
             className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1">
-            <FaTimes className="h-4 w-4"/>
+            <FaTimes className="h-4 w-4" />
           </button>
         </div>
       )}
 
-      <div className={`p-4 flex items-center space-x-2 ${theme==='dark'? "bg-[#303430]":"bg-white"}`}>
+      <div className={`p-4 flex items-center space-x-2 relative ${theme === 'dark' ? "bg-[#303430]" : "bg-white"}`}>
         <button
           className="focus:outline-none"
-          onClick={()=>setShowEmojiPicker(!showEmojiPicker)}>
-          <FaSmile className={`h-6 w-6 ${theme==='dark'? "text-gray-400":"text-gray-500"}`}/>
+          onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+          <FaSmile className={`h-6 w-6 ${theme === 'dark' ? "text-gray-400" : "text-gray-500"}`} />
         </button>
         {showEmojiPicker && (
           <div ref={emojiPickerRef} className="absolute left-0 bottom-16 z-50">
-            
+            <EmojiPicker
+              onEmojiClick={(emojiObject) => {
+                setMessage((prev) => prev + emojiObject.emoji)
+                setShowEmojiPicker(false);
+              }}
+              theme={theme}
+
+            />
           </div>
         )}
+        <div className="relative">
+          <button
+            className="focus:outline-none"
+            onClick={() => setShowFileMenu(!showFileMenu)}
+          >
+            <FaPaperclip className={`h-6 w-6 mt-2 ${theme === 'dark' ? "text-gray-400" : "text-gray-500"}`} />
+          </button>
+
+          {showFileMenu && (
+            <div className={`absolute bottom-full left-0 mb-2 ${theme === 'dark' ? "bg-gray-700" : "bg-white"} rounded-lg shadow-lg`}>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="images/*, video/*"
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current.click()}
+                className={`flex items-center px-4 py-2 w-full transition-colors ${theme === 'dark' ? "hover:bg-gray-500" : "hover:bg-gray-100"}`}>
+                <FaImage className="mr-2" />Image/Video
+              </button>
+              <button
+                onClick={() => fileInputRef.current.click()}
+                className={`flex items-center px-4 py-2 w-full transition-colors ${theme === 'dark' ? "hover:bg-gray-500" : "hover:bg-gray-100"}`}>
+                <FaFile className="mr-2" />Documents
+              </button>
+
+
+            </div>
+          )}
+        </div>
+
+        <input
+          type="text"
+          value={message}
+          onChange={(e)=>setMessage(e.target.value)}
+          onKeyPress={(e)=>{
+            if(e.key==='Enter') handleSendMessage();
+          }}
+          placeholder="Type a message"
+          className={`flex-grow px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-green-500 ${theme==='dark'? "bg-gray-700 text-white border-gray-600":"bg-white text-black border-gray-300"}`}
+        />
+        <button 
+          onClick={handleSendMessage}
+          className="focus:outline-none">
+          <FaPaperPlane className="h-6 w-6 text-green-500"/>
+        </button>
       </div>
     </div>
   )
