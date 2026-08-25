@@ -144,7 +144,7 @@ const initializeSocket=(server)=>{
         })
 
         //Add or update reactions on a message
-        socket.on("add_reactions",async({messageId,emoji,userId,reactionUserId})=>{
+        socket.on("add_reactions",async({messageId,emoji,userId:reactionUserId})=>{
             try{
                 const message=await Message.findById(messageId);
                 if(!message) return;
@@ -154,8 +154,8 @@ const initializeSocket=(server)=>{
                 })
 
                 //If the message already has a reaction(emoji)
-                if(existingReactionIdx==-1){
-                    const existingReaction=message.reaction.find(existingReactionIdx);
+                if(existingReactionIdx>-1){
+                    const existingReaction=message.reactions[existingReactionIdx];
 
                     //If the emoji is the same as the one we are putting, then toggle remove it
                     if(existing.emoji===emoji) message.reactions.splice(existingReactionIdx,1);
