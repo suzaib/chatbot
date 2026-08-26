@@ -1,11 +1,22 @@
 import { motion, AnimatePresence } from "framer-motion";
 import ChatWindow from "../pages/ChatSection/ChatWindow";
 import Sidebar from "./Sidebar";
+import { useEffect, useState, type ReactNode } from "react";
+import { useLocation } from "react-router-dom";
+import useLayoutStore from '../store/useLayoutStore';
+import useThemeStore from '../store/useThemeStore';
 
-const Layout = ({ children, isThemeDialogueOpen, toggleThemeDialogue, isStatusPreviewOpen, statusPreviewContent }) => {
+interface LayoutProps{
+  children:ReactNode;
+  isThemeDialogOpen:boolean;
+  toggleThemeDialog:()=>{};
+  isStatusPreviewOpen:boolean;
+  statusPreviewContent:
+}
+const Layout = ({ children, isThemeDialogOpen, toggleThemeDialog, isStatusPreviewOpen, statusPreviewContent }:LayoutProps) => {
 
-  const selectedContact = useLayoutStore(state => state.selectedContact);
-  const setSelectedContact = useLayoutStore(state => state.setSelectedContact);
+  const selectedContact = useLayoutStore((state) => state.selectedContact);
+  const setSelectedContact = useLayoutStore((state) => state.setSelectedContact);
   const location = useLocation();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 760);
   const { theme, setTheme } = useThemeStore();

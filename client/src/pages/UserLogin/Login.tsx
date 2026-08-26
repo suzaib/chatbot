@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import useLoginStore from '../../store/useLoginStore';
-import useUserStore from "../../store/useUserStore";
+import useLoginStore from '../../store/useLoginStore.js';
+import useUserStore from "../../store/useUserStore.js";
 import useThemeStore from "../../store/useThemeStore";
 import { motion } from 'framer-motion';
 import { sendOtp, verifyOtp } from "../../services/user.service.js";

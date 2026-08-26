@@ -28,7 +28,12 @@ const HomePage = () => {
     fetchAllUsers();
   }, [])
   return (
-    <Layout>
+    <Layout
+      isThemeDialogOpen={isThemeDialogOpen}
+      toggleThemeDialog={toggleThemeDialog}
+      isStatusPreviewOpen={isStatusPreviewOpen}
+      statusPreviewContent={statusPreviewContent}
+    >
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

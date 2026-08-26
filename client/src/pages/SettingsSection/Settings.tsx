@@ -28,7 +28,7 @@ const Settings = () => {
   return (
     <Layout
       isThemeDialogueOpen={isThemeDialogOpen}
-      toggleThemeDialogue={toggleThemeDialog}
+      toggleThemeDialog={toggleThemeDialog}
     >
       <div className={`flex h-screen ${theme === 'dark' ? "bg-[rgb(17,27,33)] text-white" : "bg-white text-black"}`}>
         <div className={`w-[400px] border-r ${theme === 'dark' ? "broder-gray-600" : "border-gray-200"}`}>
