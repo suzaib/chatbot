@@ -3,15 +3,29 @@ import {create} from 'zustand';
 
 //Persist saves the zustand store with a storage backend
 //It synchronizes both therefore each time you change the state using set, persist automatically writes the updated state to storage
-import {persist,createJSONStorage} from 'zustand/middleware';
+import {persist} from 'zustand/middleware';
 
 //Persist signature is roughly : persist(stateCreator,options)  
 
 //Each user has its own separate zustand store where it stores its information
 //So this store will only store one user's info, the user who is logged in
 
+interface UserEmailData{
+    email:string;
+}
+
+//Creating a interface for LoginStore
+interface LoginState{
+    step:number;
+    userEmailData:UserEmailData | null;
+    
+    setStep:(step:number)=>void;
+    setUserEmailData:(data:UserEmailData)=>void;
+    resetLoginState:()=>void;
+}
+
 //We create the login store using create function
-const useLoginStore=create(
+const useLoginStore=create<LoginState>()(
 
     //We wrap everything inside persist, so that each time any state is created or modified, persists immediately updates the storage
     //Otherwise the changes made would have been lost
