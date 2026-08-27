@@ -1,3 +1,8 @@
+import { create } from "zustand";
+import type { User } from "../types/user";
+
+
+
 const useChatStore=create((set,get)=>({
     conversation:[], //list of all conversations
     currentConversation:null,
