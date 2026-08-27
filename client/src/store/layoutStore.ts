@@ -20,8 +20,7 @@ const useLayoutStore = create<LayoutState>()(
             setActiveTab: (tab) => set({ activeTab: tab })
         }),
         {
-            name: "layout-storage",
-            storage: createJSONStorage(() => localStorage),
+            name: "layout-storage"
         }
     )
 )

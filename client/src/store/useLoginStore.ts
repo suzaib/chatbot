@@ -3,7 +3,7 @@ import {create} from 'zustand';
 
 //Persist saves the zustand store with a storage backend
 //It synchronizes both therefore each time you change the state using set, persist automatically writes the updated state to storage
-import {persist} from 'zustand/middleware';
+import {persist,createJSONStorage} from 'zustand/middleware';
 
 //Persist signature is roughly : persist(stateCreator,options)  
 
