@@ -3,6 +3,9 @@ interface Reaction{
     user:User;
     emoji:string;
 }
+
+export type MessageStatus="sent"|"delivered"|"read";
+
 export interface Message{
     conversation:string;
     sender:User;
@@ -11,7 +14,7 @@ export interface Message{
     imageOrVideoURL?:string;
     contentType?:"image"|"video"|"text";
     reactions:Reaction[];
-    messageStatus:string;
+    messageStatus:MessageStatus;
     createdAt:string;
     updatedAt:string;
 }

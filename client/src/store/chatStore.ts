@@ -1,5 +1,10 @@
 import { create } from "zustand";
 import type { User } from "../types/user";
+import type {Socket} from "socket.io-client";
+import type {AxiosError} from "axios";
+import {axiosInstance} from "../services/axios";
+import {getSocket} from "../socket/socket";
+
 
 
 
