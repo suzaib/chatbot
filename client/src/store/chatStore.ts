@@ -5,13 +5,73 @@ import type {AxiosError} from "axios";
 import {axiosInstance} from "../services/axios";
 import {getSocket} from "../socket/socket";
 
-import type {Reaction} from 
+import type { Reaction } from "../types/reaction";
+import type { Message, MessageStatus } from "../types/message";
+import type { Conversation } from "../types/conversation";
+
+interface MessageStatusUpdateEvent{
+    messageId:string;
+    messageStatus:MessageStatus;
+}
+
+interface MessageDeletedEvent{
+    deletedMessageId:string;
+}
+
+interface TypingEvent{
+    userId:string;
+    conversationId:string;
+    isTyping:boolean;
+}
+
+interface ReactionUpdateEvent{
+    messageId:string;
+    reactions:Reaction[];
+}
+
+interface UserStatus{
+    userId:string | null;
+    isOnline:boolean;
+    lastSeen:string | null;
+}
+
+interface ChatStore{
+    conversations:Conversation[] | null;
+    currentConversation:Conversation | null;
+    currentUser:User | null;
+    messages:Message[];
+    loading:boolean;
+    error:string | null;
+    onlineUsers:Map<string,string>;
+    typingUsers:Map<string,Set<string>>;
+
+    initSocketListeners:()=>void;
+    setCurrentUser:(user:User | null)=>void;
+    fetchConversations:()=>Promise<Conversation | null>;
+    fetchMessages:(conversationId:string)=>Promise<Message[]>;
+    sendMessage:(formData:FormData)=>Promise<Message>;
+    receiveMessage:(message:Message)=>void;
+    markMessagesAsRead:()=>Promise<void>;
+    deleteMessage:(messageId:string)=>Promise<boolean>;
+
+    addReaction:(messageId:string,emoji:string)=>void;
+
+    startTyping:(receiverId:string)=>void;
+    stopTyping:(receiverId:string)=>void;
+    isUserTyping:(userId:string)=>boolean;
+
+    isUserOnline:(userId:string)=>boolean | null;
+    getUserLastSeen:(userId:string)=>string | null;
+
+    cleanup:()=>void;
+}
 
 
 
-const useChatStore=create((set,get)=>({
-    conversation:[], //list of all conversations
+const useChatStore=create<ChatStore>((set,get)=>({
+    conversations:[], //list of all conversations
     currentConversation:null,
+    currentUser:null,
     messages:[],
     loading:false,
     error:null,
@@ -33,12 +93,12 @@ const useChatStore=create((set,get)=>({
         socket.off("message_deleted");
 
         //Listen for incoming messages
-        socket.on("receive_message",(message)=>{
+        socket.on("receive_message",(message:Message)=>{
 
         });
 
         //Confirm message delivery
-        socket.on("message_send",(message)=>{
+        socket.on("message_send",(message:Message)=>{
             set((state)=>({
                 messages:state.messages.map((msg)=>
                 msg._id===message._id? {...msg}:msg)
@@ -46,15 +106,15 @@ const useChatStore=create((set,get)=>({
         })
 
         //Update message status
-        socket.on("message_status_update",({messageId,messageStatus})=>{
+        socket.on("message_status_update",({messageId,messageStatus}:MessageStatusUpdateEvent)=>{
             set((state)=>({
-                messages:state.messages.map((map)=>
+                messages:state.messages.map((msg)=>
                 msg._id===messageId? {...msg,messageStatus}:msg)
             }))
         })
 
         //Handle reaction on message
-        socket.on("reaction_update",({messageId,reactions})=>{
+        socket.on("reaction_update",({messageId,reactions}:ReactionUpdateEvent)=>{
             set((state)=>({
                 messages:state.messages.map((msg)=>
                 msg._id===messageId ? {...msg,reactions}:msg)
@@ -62,14 +122,14 @@ const useChatStore=create((set,get)=>({
         })
 
         //Handle message removal from local state
-        socket.on("message_deleted",({deletedMessageId})=>{
+        socket.on("message_deleted",({deletedMessageId}:MessageDeletedEvent)=>{
             set((state)=>({
-                message:state.messages.filter((msg)=>msg._id!=deletedMessageId)
+                messages:state.messages.filter((msg)=>msg._id!=deletedMessageId)
             }))
         })
 
         //Handle any message sending error
-        socket.on("message_error",(error)=>{
+        socket.on("message_error",(error:unknown)=>{
             console.error("message error",error)
         })
 
@@ -77,7 +137,7 @@ const useChatStore=create((set,get)=>({
         //The map stores conversationIDs->Set of userIDs
         //So the map looks like this :
         // ConvoID1->{user1, user2}
-        socket.on("user_typing",({userId,conversationId,isTyping})=>{
+        socket.on("user_typing",({userId,conversationId,isTyping}:TypingEvent)=>{
             set((state)=>{
                 const newTypingUsers=new Map(state.typingUsers);
 
@@ -87,6 +147,7 @@ const useChatStore=create((set,get)=>({
 
                 //Then we get the set from the conversationID
                 const typingSet=newTypingUsers.get(conversationId);
+                if(!typingSet) return state;
 
                 //If the user is typing, we add him to the set, otherwise we remove him
                 //Since we are using a set, we can't add it twice
@@ -98,7 +159,7 @@ const useChatStore=create((set,get)=>({
         })
 
         //Track user's online/offline status
-        socket.on("user_status",({userId,isOnline,lastSeen})=>{
+        socket.on("user_status",({userId,isOnline,lastSeen}:OnlineUserStatus)=>{
             set((state)=>{
                 const newOnlineUsers=new Map(state.onlineUsers);
                 newOnlineUsers.set(userId,{isOnline,lastSeen});

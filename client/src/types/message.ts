@@ -4,6 +4,7 @@ import type { Reaction } from "./reaction";
 export type MessageStatus="sent"|"delivered"|"read";
 
 export interface Message{
+    _id:string;
     conversation:string;
     sender:User;
     receiver:User;
