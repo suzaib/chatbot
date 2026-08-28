@@ -1,8 +1,5 @@
 import type { User } from "./user";
-interface Reaction{
-    user:User;
-    emoji:string;
-}
+import type { Reaction } from "./reaction";
 
 export type MessageStatus="sent"|"delivered"|"read";
 
