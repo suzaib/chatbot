@@ -229,6 +229,7 @@ const useChatStore = create<ChatStore>((set, get) => ({
         }
     },
 
+    
     //Fetch messages for a conversation
     fetchMessages: async (conversationId:string) => Promise<Message[]>{
         if (!conversationId) return;
